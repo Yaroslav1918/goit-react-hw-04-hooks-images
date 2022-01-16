@@ -1,4 +1,4 @@
-import { Component, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ImageGallery from "../ImageGallery";
 import serviceAPI from "../../Api/serviceAPI/serviceAPI";
 import { ToastContainer } from "react-toastify";
@@ -9,6 +9,8 @@ import { ModalImg } from "../Modal/Modal.styled";
 import Loader from "../Loader";
 import Searchbar from "../Searchbar";
 import GlobalStyle from "../../Style/globalStyles";
+import ScrollToTop from "react-scroll-to-top";
+import { animateScroll as scroll } from "react-scroll";
 
 const Status = {
   IDLE: "idle",
@@ -43,8 +45,6 @@ export default function App() {
           setGallery((prevState) => [...prevState, ...hits]);
           setPage(page);
           setStatus(Status.RESOLVED);
-
-          if (page !== 1) scrollPage();
         })
 
         .catch((error) => {
@@ -61,21 +61,20 @@ export default function App() {
     toggleModal();
   };
 
-  const scrollPage = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+  const scrollToBottom = () => {
+    scroll.scrollMore(500);
   };
 
   const onLoadMore = () => {
     setPage(page + 1);
     setStatus(Status.PENDING);
+    scrollToBottom();
   };
 
   const toggleModal = () => {
     setShowModal((showModal) => !showModal);
   };
+
   return (
     <>
       <GlobalStyle />
@@ -91,6 +90,7 @@ export default function App() {
           <ToastContainer />
 
           <ImageGallery hits={gallery} onClick={onClickImageURL} />
+          <ScrollToTop smooth color="#3f51b5" />
           {gallery.length > 0 ? <Button onLoadMore={onLoadMore} /> : null}
           {showModal && (
             <Modal onClose={toggleModal}>
